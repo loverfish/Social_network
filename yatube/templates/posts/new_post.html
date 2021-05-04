@@ -3,10 +3,10 @@
 {% block title %}New post{% endblock %}
 
 {% block content %}
-    <h2>New post</h2>
+    <h2>{% if post %}Update post{% else %}New post{% endif %}</h2>
     <form action="" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">New</button>
+        <button type="submit">{% if post %}Update{% else %}Create{% endif %}</button>
     </form>
 {% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Post{% endblock %}
+
+{% block content %}
+
+
+<!--    <h3>-->
+<!--        Автор: {{ post.author.get_full_name }}, Дата публикации: {{ post.pub_date|date:"d M Y" }}-->
+<!--    </h3>-->
+<!--    <p>{{ post.text|linebreaksbr }}</p>-->
+<!--    {% if not forloop.last %}<hr>{% endif %}-->
+
+
+<main role="main" class="container">
+    <div class="row">
+
+        {% include 'user_card.html' %}
+
+        <div class="col-md-9">
+
+            {% include 'post_card.html' %}
+
+        </div>
+    </div>
+</main>
+
+{% endblock %}
