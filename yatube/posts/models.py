@@ -20,8 +20,9 @@ class Post(models.Model):
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, related_name='group_posts', blank=True, null=True, default='cat'
+        Group, on_delete=models.CASCADE, related_name='group_posts', blank=True, null=True
     )
+    image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
     def __str__(self):
         return self.text
