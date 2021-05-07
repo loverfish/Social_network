@@ -34,12 +34,14 @@ def profile(request, username):
 
 def post_view(request, username, post_id):
     author = get_object_or_404(User, username=username)
+    comment_list = Comment.objects.order_by('-created').filter(post=post_id)
     post = get_object_or_404(Post, pk=post_id)
     posts = Post.objects.filter(author=author).all() # noqa
     return render(request, 'posts/post.html', {
         'post': post,
         'author': author,
         'posts_count': len(posts),
+        'comment_list': comment_list,
     })
 
 
@@ -70,19 +72,27 @@ def post_edit(request, username, post_id):
     return redirect('post', username=username, post_id=post_id)
 
 
+@login_required()
 def add_comment(request, username, post_id):
     author = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(author=author).all()
     post = get_object_or_404(Post, id=post_id)
-    form = CommentForm()
+    comment_list = Comment.objects.order_by('-created').filter(post=post_id)
+    form = CommentForm(request.POST or None)
     if request.method == 'POST':
-        form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.author = request.user
             comment.post = post
             comment.save()
             return redirect('index')
-    return render(request, 'comments.html', {'form': form, 'post': post})
+    return render(request, 'posts/post.html', {
+        'form': form,
+        'post': post,
+        'comment_list': comment_list,
+        'posts_count': len(posts),
+        'author': author,
+    })
 
 
 def page_not_found(request, exception):

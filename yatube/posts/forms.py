@@ -12,6 +12,18 @@ class PostForm(forms.ModelForm):
             'group': 'Группа',
             'image': 'Изображение',
         }
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+            }),
+            'group': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                # 'type': 'file',
+            })
+        }
 
 
 class CommentForm(forms.ModelForm):
@@ -22,6 +34,5 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
-                # 'placeholder': 'comment',
             }),
         }

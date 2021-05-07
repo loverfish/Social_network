@@ -4,14 +4,6 @@
 
 {% block content %}
 
-
-<!--    <h3>-->
-<!--        Автор: {{ post.author.get_full_name }}, Дата публикации: {{ post.pub_date|date:"d M Y" }}-->
-<!--    </h3>-->
-<!--    <p>{{ post.text|linebreaksbr }}</p>-->
-<!--    {% if not forloop.last %}<hr>{% endif %}-->
-
-
 <main role="main" class="container">
     <div class="row">
 
@@ -19,10 +11,14 @@
 
         <div class="col-md-9">
 
-            {% include 'post_card.html' %}
-
+            {% include 'post_card.html' with post=post %}
         </div>
     </div>
+    {% if form %}
+        {% include 'add_comment.html' %}
+    {% endif%}
+
+    {% include 'all_comments.html' %}
 </main>
 
 {% endblock %}
