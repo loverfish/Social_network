@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import PostForm
-from .models import Post, Group, User
+from .forms import PostForm, CommentForm
+from .models import Post, Group, User, Comment
 from .utils import post_paginator
 
 
@@ -44,6 +44,20 @@ def post_view(request, username, post_id):
 
 
 @login_required()
+def new_post(request):
+    bound_form = PostForm(request.POST or None, files=request.FILES or None)
+    if request.method == 'POST':
+        if bound_form.is_valid():
+            post = bound_form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('index')
+        # return render(request, 'posts/new_post.html', {'form': bound_form})
+    # form = PostForm
+    return render(request, 'posts/new_post.html', {'form': bound_form})
+
+
+@login_required()
 def post_edit(request, username, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.user == post.author:
@@ -56,18 +70,19 @@ def post_edit(request, username, post_id):
     return redirect('post', username=username, post_id=post_id)
 
 
-@login_required()
-def new_post(request):
-    bound_form = PostForm(request.POST or None, files=request.FILES or None)
+def add_comment(request, username, post_id):
+    author = get_object_or_404(User, username=username)
+    post = get_object_or_404(Post, id=post_id)
+    form = CommentForm()
     if request.method == 'POST':
-        if bound_form.is_valid():
-            post = bound_form.save(commit=False)
-            post.author = request.user
-            post.save()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
             return redirect('index')
-        # return render(request, 'posts/new_post.html', {'form': bound_form})
-    # form = PostForm
-    return render(request, 'posts/new_post.html', {'form': bound_form})
+    return render(request, 'comments.html', {'form': form, 'post': post})
 
 
 def page_not_found(request, exception):

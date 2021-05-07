@@ -26,3 +26,13 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='Post')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_comments')
+    text = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.text
