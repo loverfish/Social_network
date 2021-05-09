@@ -3,6 +3,8 @@
 {% block header %}Последние обновления на сайте{% endblock %}
 {% block content %}
 
+    {% load cache %}
+    {% cache 20 index_page %}
     <div class="col-md-9">
 
         {% for post in page %}
@@ -13,4 +15,5 @@
             {% include 'paginator.html' with items=page paginator=paginator %}
         {% endif %}
     </div>
+    {% endcache %}
 {% endblock %}

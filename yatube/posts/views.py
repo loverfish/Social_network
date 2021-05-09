@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.cache import cache_page
 
 from .forms import PostForm, CommentForm
 from .models import Post, Group, User, Comment
 from .utils import post_paginator
 
 
+# @cache_page(20)
 def index(request):
     post_list = Post.objects.order_by('-pub_date').all() # noqa
     page, paginator = post_paginator(request, post_list)
