@@ -3,33 +3,39 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_page
 
 from .forms import PostForm, CommentForm
-from .models import Post, Group, User, Comment
+from .models import Post, Group, User, Comment, Follow
 from .utils import post_paginator
 
 
 # @cache_page(20)
 def index(request):
-    post_list = Post.objects.order_by('-pub_date').all() # noqa
+    post_list = Post.objects.order_by('-pub_date').all()
     page, paginator = post_paginator(request, post_list)
     return render(request, 'index.html', {'page': page, 'paginator': paginator})
 
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = Post.objects.filter(group=group).order_by('-pub_date').all() # noqa
+    posts = Post.objects.filter(group=group).order_by('-pub_date')
     page, paginator = post_paginator(request, posts, 5)
     return render(request, 'posts/group.html', {'group': group, 'page': page, 'paginator': paginator})
 
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    posts = Post.objects.filter(author=author).order_by('-pub_date').all() # noqa
+    posts = Post.objects.filter(author=author).order_by('-pub_date')
+    follow = Follow.objects.filter(user=request.user, author=author).count()
+    followers = Follow.objects.filter(author=author).count()
+    following = Follow.objects.filter(user=author).count()
     page, paginator = post_paginator(request, posts, 5)
     context = {
         'page': page,
         'paginator': paginator,
         'author': author,
         'posts_count': len(posts),
+        'follow': follow,
+        'followers': followers,
+        'following': following,
     }
     return render(request, 'posts/profile.html', context)
 
@@ -95,6 +101,33 @@ def add_comment(request, username, post_id):
         'posts_count': len(posts),
         'author': author,
     })
+
+
+@login_required
+def follow_index(request):
+    follows = Follow.objects.filter(user=request.user)
+    author_list = []
+    for follow in follows:
+        author_list.append(follow.author)
+    post_list = Post.objects.filter(author__in=author_list).order_by('-pub_date')
+    page, paginator = post_paginator(request, post_list)
+    return render(request, "follow.html", {'page': page, 'paginator': paginator})
+
+
+@login_required
+def profile_follow(request, username):
+    author = get_object_or_404(User, username=username)
+    if Follow.objects.filter(user=request.user, author=author).count() == 0 and request.user != author:
+        Follow.objects.create(user=request.user, author=author)
+    return redirect('profile', username=username)
+
+
+@login_required
+def profile_unfollow(request, username):
+    author = get_object_or_404(User, username=username)
+    if Follow.objects.filter(user=request.user, author=author).count() == 1:
+        Follow.objects.get(user=request.user, author=author).delete()
+    return redirect('profile', username=username)
 
 
 def page_not_found(request, exception):
