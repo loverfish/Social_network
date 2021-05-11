@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Посты подписчиков{% endblock %}
+{% block content %}
+
+    <div class="col-md-9">
+
+        {% include 'menu.html' with followers=True %}
+
+        <h1>Посты подписчиков</h1>
+
+        {% for post in page %}
+            {% include 'post_card.html' %}
+        {% endfor %}
+
+        {% if page.has_other_pages %}
+            {% include 'paginator.html' with items=page paginator=paginator %}
+        {% endif %}
+
+    </div>
+{% endblock %}

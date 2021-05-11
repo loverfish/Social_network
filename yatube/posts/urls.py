@@ -11,6 +11,7 @@ urlpatterns = [
     path('group/<slug>/', group_posts, name='group_posts'),
     path('new/', new_post, name='new_post'),
     path('follow/', follow_index, name="follow_index"),
+    path('followers/', followers_index, name="followers_index"),
     path('follow/<str:username>/', profile_follow, name="profile_follow"),
     path('unfollow/<str:username>/', profile_unfollow, name="profile_unfollow"),
     path('404/', page_not_found),

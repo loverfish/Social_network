@@ -106,13 +106,24 @@ def add_comment(request, username, post_id):
 
 @login_required
 def follow_index(request):
-    follows = Follow.objects.filter(user=request.user)
-    author_list = []
-    for follow in follows:
-        author_list.append(follow.author)
-    post_list = Post.objects.filter(author__in=author_list).order_by('-pub_date')
+    # follows = Follow.objects.filter(user=request.user)
+    # author_list = []
+    # for follow in follows:
+    #     author_list.append(follow.author)
+    # post_list = Post.objects.filter(author__in=author_list).order_by('-pub_date')
+    """У поля Follow.author через related_name находим связи с (всех подписанных пользователей) Follow.user
+    Ищем все посты, авторы которых = Follow.author, а Follow.user = текущему пользователю
+    author__follower__author=request.user - посты всех пользователей, которые подписаны на текущего"""
+    post_list = Post.objects.filter(author__following__user=request.user).order_by('-pub_date')
     page, paginator = post_paginator(request, post_list)
     return render(request, "follow.html", {'page': page, 'paginator': paginator})
+
+
+@login_required
+def followers_index(request):
+    post_list = Post.objects.filter(author__follower__author=request.user).order_by('-pub_date')
+    page, paginator = post_paginator(request, post_list)
+    return render(request, "followers.html", {'page': page, 'paginator': paginator})
 
 
 @login_required
