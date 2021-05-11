@@ -21,19 +21,21 @@
                     Записей: {{ posts_count }}
                 </div>
             </li>
-            <li class="list-group-item">
-                {% if follow %}
+            {% if follow %}
+                <li class="list-group-item">
                     <a class="btn btn-lg btn-light"
                        href="{% url 'profile_unfollow' author.username %}" role="button">
                         Отписаться
                     </a>
-                {% elif author.username != request.user.username %}
+                </li>
+            {% elif author.username != request.user.username and author.username.id != None %}
+                <li class="list-group-item">
                     <a class="btn btn-lg btn-primary"
                        href="{% url 'profile_follow' author.username %}" role="button">
                         Подписаться
                     </a>
-                {% endif %}
-            </li>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>

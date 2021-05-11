@@ -24,7 +24,6 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=author).order_by('-pub_date')
-    follow = Follow.objects.filter(user=request.user, author=author).count()
     followers = Follow.objects.filter(author=author).count()
     following = Follow.objects.filter(user=author).count()
     page, paginator = post_paginator(request, posts, 5)
@@ -33,10 +32,12 @@ def profile(request, username):
         'paginator': paginator,
         'author': author,
         'posts_count': len(posts),
-        'follow': follow,
         'followers': followers,
         'following': following,
     }
+    if request.user.id:
+        follow = Follow.objects.filter(user=request.user, author=author).count()
+        context['follow'] = follow
     return render(request, 'posts/profile.html', context)
 
 
