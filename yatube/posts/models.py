@@ -9,7 +9,6 @@ class Group(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     description = models.TextField()
-    rules = models.TextField(blank=True, null=False)
 
     def __str__(self):
         return self.title
@@ -41,7 +40,3 @@ class Comment(models.Model):
 class Follow(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
-
-    # def __str__(self):
-    #     return self.author.
-
